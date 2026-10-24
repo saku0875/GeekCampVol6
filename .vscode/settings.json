@@ -1,0 +1,32 @@
+{
+  // AIによるコード生成は停止
+  "github.copilot.enable": {
+    "*": false
+  },
+  "github.copilot.nextEditSuggestions.enabled": false,
+
+  // IntelliSenseによる関数・変数・ライブラリAPI候補を表示
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+
+  // 「.」の入力後にメソッドやプロパティ候補を表示
+  "editor.suggestOnTriggerCharacters": true,
+
+  // 引数・型情報を表示
+  "editor.parameterHints.enabled": true,
+
+  // 単なる文章上の類似単語からの候補は無効化
+  // 言語サーバーが把握している正規のシンボル候補は残る
+  "editor.wordBasedSuggestions": "off",
+
+  // 定型コードのスニペット候補は不要なら無効化
+  "editor.snippetSuggestions": "none",
+  "C_Cpp.errorSquiggles": "disabled",
+
+  //Cmakeが保持しているSDL2の情報を渡す
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+  
+}
