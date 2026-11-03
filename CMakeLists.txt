@@ -19,6 +19,8 @@ find_package(SDL2_net CONFIG REQUIRED)
 
 add_executable(SDLGame ## WIN32はRelease版用,GUIアプリとしてビルド
     src/main.cpp
+    src/SDLfps.cpp
+    src/SDLTimer.cpp
 )
 
 target_link_libraries(SDLGame PRIVATE
