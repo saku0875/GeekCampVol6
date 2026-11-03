@@ -4,6 +4,7 @@
 
 #define SCREEN_WIDTH 640*2
 #define SCREEN_HEIGHT 480*2
+#define FONTSIZE 32 
 
 int main(int argc, char* argv[]){
     SDL_Window* window = NULL;
@@ -12,11 +13,16 @@ int main(int argc, char* argv[]){
     SDLTimer timerCountFPS;
     SDLTimer timeModifyFPS;
     SDLFps timeModify; 
+    SDL_Font font;
+    SDL_Surface fsuf = NULL;
+    SDL_Texture ftex = NULL;
+    SDL_Color fColor = {0,0,0,255};
 
 
     int menuLine = int(SCREEN_WIDTH*0.7) -SCREEN_WIDTH/2; 
     SDL_Rect TaskRect={SCREEN_WIDTH/4,SCREEN_HEIGHT/3,int(SCREEN_WIDTH*0.7),int(SCREEN_HEIGHT*0.6)};
     SDL_Rect MenuRect={0,0,menuLine,SCREEN_HEIGHT};
+    SDL_Rect MenuBox ={0,0,munuLine,SCREEN_WIDTH/10};
     
     Uint32 uFlames;
     const Uint8 *pKeyStatus;
@@ -29,12 +35,18 @@ int main(int argc, char* argv[]){
 
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
+    TTF_Init();
     window = SDL_CreateWindow("Simple Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN+SDL_WINDOW_BORDERLESS+SDL_WINDOW_ALWAYS_ON_TOP);
     renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_SetRenderDrawColor(renderer,186,183,204,255);
     SDL_RenderClear(renderer);
     num_window++;
-
+    
+    //フォントのロード
+    font = TTF_OpenFont("assets/BestTen-DOT.otf",FONTSIZE);
+    fsuf = TTF_RenderUTF8_Blended(font, "メニュー" ,fclor);
+    ftex = SDL_CreateTextureFromSurface(renderer,fsuf);
+    SDL_FreeSurface(fsuf);
     
     //ゲームループ
     while (bQuit == false)
@@ -73,8 +85,16 @@ int main(int argc, char* argv[]){
         SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/5,menuLine,SCREEN_HEIGHT/5);
         SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/10*3,menuLine,SCREEN_HEIGHT/10*3);
         SDL_RenderDrawRect(renderer,&TaskRect);
+        DL_RenderCopy(renderer,ftex,NULL, &MenuBox);
+       //フルサイズ画面の描画はここまで
+
+
         SDL_RenderPresent(renderer);
 
+
+
+
+        //フレーム固定処理
         uFlames++;
         fFPS = uFlames / (timerCountFPS.getTicks()/ 1000.);
         //ピリオドをつけるとfloatになる。なければint扱い、0で割る可能性. ticksはmsなので1000で割る.
@@ -84,6 +104,7 @@ int main(int argc, char* argv[]){
     //破棄
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 
