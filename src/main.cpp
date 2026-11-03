@@ -13,16 +13,16 @@ int main(int argc, char* argv[]){
     SDLTimer timerCountFPS;
     SDLTimer timeModifyFPS;
     SDLFps timeModify; 
-    SDL_Font font;
-    SDL_Surface fsuf = NULL;
-    SDL_Texture ftex = NULL;
+    TTF_Font *font;
+    SDL_Surface *fsuf = nullptr;
+    SDL_Texture *ftex = nullptr;
     SDL_Color fColor = {0,0,0,255};
 
 
     int menuLine = int(SCREEN_WIDTH*0.7) -SCREEN_WIDTH/2; 
     SDL_Rect TaskRect={SCREEN_WIDTH/4,SCREEN_HEIGHT/3,int(SCREEN_WIDTH*0.7),int(SCREEN_HEIGHT*0.6)};
     SDL_Rect MenuRect={0,0,menuLine,SCREEN_HEIGHT};
-    SDL_Rect MenuBox ={0,0,munuLine,SCREEN_WIDTH/10};
+    SDL_Rect MenuBox ={0,0,menuLine,SCREEN_HEIGHT/10};
     
     Uint32 uFlames;
     const Uint8 *pKeyStatus;
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
     
     //フォントのロード
     font = TTF_OpenFont("assets/BestTen-DOT.otf",FONTSIZE);
-    fsuf = TTF_RenderUTF8_Blended(font, "メニュー" ,fclor);
+    fsuf = TTF_RenderUTF8_Blended(font,"メニュー",fColor);
     ftex = SDL_CreateTextureFromSurface(renderer,fsuf);
     SDL_FreeSurface(fsuf);
     
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]){
         SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/5,menuLine,SCREEN_HEIGHT/5);
         SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/10*3,menuLine,SCREEN_HEIGHT/10*3);
         SDL_RenderDrawRect(renderer,&TaskRect);
-        DL_RenderCopy(renderer,ftex,NULL, &MenuBox);
+        SDL_RenderCopy(renderer,ftex,NULL, &MenuBox);
        //フルサイズ画面の描画はここまで
 
 
