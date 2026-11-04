@@ -17,6 +17,7 @@ int main(int argc, char* argv[]){
     SDL_Surface *fsuf = nullptr;
     SDL_Texture *ftex = nullptr;
     SDL_Color fColor = {0,0,0,255};
+    SDL_bool bordered = SDL_FALSE;
 
 
     int menuLine = int(SCREEN_WIDTH*0.7) -SCREEN_WIDTH/2; 
@@ -36,11 +37,10 @@ int main(int argc, char* argv[]){
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
-    window = SDL_CreateWindow("Simple Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN+SDL_WINDOW_BORDERLESS+SDL_WINDOW_ALWAYS_ON_TOP);
+    window = SDL_CreateWindow("Simple Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN+SDL_WINDOW_ALWAYS_ON_TOP);
     renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_SetRenderDrawColor(renderer,186,183,204,255);
     SDL_RenderClear(renderer);
-    num_window++;
     
     //フォントのロード
     font = TTF_OpenFont("assets/BestTen-DOT.otf",FONTSIZE);
@@ -69,11 +69,13 @@ int main(int argc, char* argv[]){
 
         
 
-        if (most_front && num_window <2){
-            window = SDL_CreateWindow("Simple Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-            num_window++;
+        if (most_front){
+            SDL_SetWindowBordered(window,bordered);
             most_front = false;
         }
+
+
+
 
         //描画処理
         //フルサイズ画面のホーム描画処理
@@ -87,6 +89,8 @@ int main(int argc, char* argv[]){
         SDL_RenderDrawRect(renderer,&TaskRect);
         SDL_RenderCopy(renderer,ftex,NULL, &MenuBox);
        //フルサイズ画面の描画はここまで
+
+
 
 
         SDL_RenderPresent(renderer);
