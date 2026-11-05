@@ -28,9 +28,9 @@ int main(int argc, char* argv[]){
     SDL_Rect MenuRect={0,0,menuLine,SCREEN_HEIGHT};
     SDL_Rect MenuBox ={0,0,menuLine,SCREEN_HEIGHT/10};
     //Smallサイズの領域
-    SDL_Rect s_taskMenuLineRect = {0,SMALL_SCH/4,SMALL_SCW, int(SMALL_SCH/4*3)};
-    SDL_Rect s_taskMenuRect = {10,SMALL_SCH/4+10,SMALL_SCW-20,int(SMALL_SCH/4*3-20)};
-    SDL_Rect s_charRect = {10,10,SMALL_SCW/3,SMALL_SCH/4-20};
+    SDL_Rect s_taskMenuLineRect = {0,SMALL_SCH/5,SMALL_SCW, int(SMALL_SCH/5*4)};
+    SDL_Rect s_taskMenuRect = {10,SMALL_SCH/5+10,SMALL_SCW-20,int(SMALL_SCH/5*4-20)};
+    SDL_Rect s_charRect = {10,10,SMALL_SCW/3,SMALL_SCH/5-20};
     SDL_Rect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/2, SMALL_SCH/4-20};
     
     Uint32 uFlames;
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]){
             SDL_RenderFillRect(renderer,&s_taskMenuLineRect);
             SDL_SetRenderDrawColor(renderer,161,157,185,255);
             SDL_RenderFillRect(renderer,&s_taskMenuRect);        
-            
+            SDL_RenderCopy(renderer,minicharTex,NULL, &s_charRect);
         }
         else{
             SDL_SetRenderDrawColor(renderer,186,183,204,255);
