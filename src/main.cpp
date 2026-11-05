@@ -85,7 +85,9 @@ int main(int argc, char* argv[]){
             }
         }
         SetWindow(window,isSmall);
-
+        if(isSmall){
+            SDL_SetWindowHitTest(window, SmallWindow_Drag, s_charRect);
+        }
 
 
         //描画処理

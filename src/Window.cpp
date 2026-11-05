@@ -21,6 +21,15 @@ int SetWindow(SDL_Window* window, SDL_bool isSmall){
     return 0;
 }
 
+SDL_HitTestResult  SmallWindow_Drag(SDL_Window *window,SDL_Point *area,void *callback_data ){
+    SDL_bool isChar = SDL_FALSE;
+    isChar = SDL_PointInRect(area, (SDL_Rect(*))callback_data);
+    if(isChar == SDL_TRUE){
+        return SDL_HITTEST_DRAGGABLE;
+    }
+    return SDL_HITTEST_NORMAL;
+}
+
 /*int drawWindow(SDL_Renderer* renderer, SDL_Texture *ftex, SDL_bool isSmall,SDL_Rect TaskRect, SDL_Rect MenuRect, SDL_Rect MenuBox,int menuLine){
     if (isSmall){
 
