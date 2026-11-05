@@ -21,7 +21,7 @@ int SetWindow(SDL_Window* window, SDL_bool isSmall){
     return 0;
 }
 
-SDL_HitTestResult  SmallWindow_Drag(SDL_Window *window,SDL_Point *area,void *callback_data ){
+SDL_HitTestResult  SmallWindow_Drag(SDL_Window *window, const SDL_Point *area, void *callback_data ){
     SDL_bool isChar = SDL_FALSE;
     isChar = SDL_PointInRect(area, (SDL_Rect(*))callback_data);
     if(isChar == SDL_TRUE){

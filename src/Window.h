@@ -5,7 +5,7 @@
 #include "SDLTimer.hpp"
 
 int SetWindow(SDL_Window* window, SDL_bool isSmall);
-SDL_HitTest * SmallWindow_Drag(SDL_Window *window,SDL_Point *area,void *callback_data );
+SDL_HitTestResult SmallWindow_Drag(SDL_Window *window,const SDL_Point *area,void *callback_data );
 
 
 /*int drawWindow(SDL_Renderer* renderer, SDL_Texture *ftex, SDL_bool isSmall,SDL_Rect TaskRect, SDL_Rect MenuRect, SDL_Rect MenuBox,int menuLine){
