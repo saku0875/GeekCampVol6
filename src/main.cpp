@@ -1,10 +1,8 @@
 #include "SDL_all.h"
 #include "SDLFps.hpp"
 #include "SDLTimer.hpp"
+#include "Window.h"
 
-#define SCREEN_WIDTH 640*2
-#define SCREEN_HEIGHT 480*2
-#define FONTSIZE 32 
 
 int main(int argc, char* argv[]){
     SDL_Window* window = NULL;
@@ -16,14 +14,24 @@ int main(int argc, char* argv[]){
     TTF_Font *font;
     SDL_Surface *fsuf = nullptr;
     SDL_Texture *ftex = nullptr;
+    SDL_Surface *charSuf = nullptr;
+    SDL_Texture *minicharTex = nullptr;
+    SDL_Texture *charTex = nullptr;
     SDL_Color fColor = {0,0,0,255};
-    SDL_bool bordered = SDL_FALSE;
+    SDL_bool isSmall = SDL_FALSE;
+    SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND;
 
 
     int menuLine = int(SCREEN_WIDTH*0.7) -SCREEN_WIDTH/2; 
+    //フルサイズの領域
     SDL_Rect TaskRect={SCREEN_WIDTH/4,SCREEN_HEIGHT/3,int(SCREEN_WIDTH*0.7),int(SCREEN_HEIGHT*0.6)};
     SDL_Rect MenuRect={0,0,menuLine,SCREEN_HEIGHT};
     SDL_Rect MenuBox ={0,0,menuLine,SCREEN_HEIGHT/10};
+    //Smallサイズの領域
+    SDL_Rect s_taskMenuLineRect = {0,SMALL_SCH/4,SMALL_SCW, int(SMALL_SCH/4*3)};
+    SDL_Rect s_taskMenuRect = {10,SMALL_SCH/4+10,SMALL_SCW-20,int(SMALL_SCH/4*3-20)};
+    SDL_Rect s_charRect = {10,10,SMALL_SCW/3,SMALL_SCH/4-20};
+    SDL_Rect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/2, SMALL_SCH/4-20};
     
     Uint32 uFlames;
     const Uint8 *pKeyStatus;
@@ -31,16 +39,20 @@ int main(int argc, char* argv[]){
     bool most_front = false;
     int num_window = 0;
     float fFPS;
-    
+      
 
 
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
-    window = SDL_CreateWindow("Simple Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN+SDL_WINDOW_ALWAYS_ON_TOP);
+    window = SDL_CreateWindow("Simple Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, 0);
-    SDL_SetRenderDrawColor(renderer,186,183,204,255);
-    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawBlendMode(renderer, blendMode);
+
+    //テクスチャの作成
+    charSuf = IMG_Load("assets/minikyaraTest.png");
+    minicharTex = SDL_CreateTextureFromSurface(renderer,charSuf);
+    SDL_FreeSurface(charSuf);
     
     //フォントのロード
     font = TTF_OpenFont("assets/BestTen-DOT.otf",FONTSIZE);
@@ -64,31 +76,43 @@ int main(int argc, char* argv[]){
             bQuit = true;
         }
         if (pKeyStatus[SDL_SCANCODE_Q]){
-            most_front = true;
+            if (!most_front){
+                most_front = true;
+                isSmall = SDL_TRUE;
+            }else{
+                most_front = false;
+                isSmall = SDL_FALSE;
+            }
         }
-
-        
-
-        if (most_front){
-            SDL_SetWindowBordered(window,bordered);
-            most_front = false;
-        }
-
+        SetWindow(window,isSmall);
 
 
 
         //描画処理
         //フルサイズ画面のホーム描画処理
-        SDL_SetRenderDrawColor(renderer,161,157,185,255);
-        SDL_RenderFillRect(renderer,&MenuRect);        
-        SDL_SetRenderDrawColor(renderer,110,105,148,255);//線の色
-        SDL_RenderDrawLine(renderer,menuLine,0,menuLine,SCREEN_HEIGHT);
-        SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/10,menuLine,SCREEN_HEIGHT/10);
-        SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/5,menuLine,SCREEN_HEIGHT/5);
-        SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/10*3,menuLine,SCREEN_HEIGHT/10*3);
-        SDL_RenderDrawRect(renderer,&TaskRect);
-        SDL_RenderCopy(renderer,ftex,NULL, &MenuBox);
-       //フルサイズ画面の描画はここまで
+        if (isSmall){
+            SDL_SetRenderDrawColor(renderer,186,183,204,255);
+            SDL_RenderClear(renderer);
+            SDL_SetRenderDrawColor(renderer,110,105,148,255);//線の色
+            SDL_RenderFillRect(renderer,&s_taskMenuLineRect);
+            SDL_SetRenderDrawColor(renderer,161,157,185,255);
+            SDL_RenderFillRect(renderer,&s_taskMenuRect);        
+            
+        }
+        else{
+            SDL_SetRenderDrawColor(renderer,186,183,204,255);
+            SDL_RenderClear(renderer);
+            SDL_SetRenderDrawColor(renderer,161,157,185,255);
+            SDL_RenderFillRect(renderer,&MenuRect);        
+            SDL_SetRenderDrawColor(renderer,110,105,148,255);//線の色
+            SDL_RenderDrawLine(renderer,menuLine,0,menuLine,SCREEN_HEIGHT);
+            SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/10,menuLine,SCREEN_HEIGHT/10);
+            SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/5,menuLine,SCREEN_HEIGHT/5);
+            SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/10*3,menuLine,SCREEN_HEIGHT/10*3);
+            SDL_RenderDrawRect(renderer,&TaskRect);
+            SDL_RenderCopy(renderer,ftex,NULL, &MenuBox);
+       }
+        //フルサイズ画面の描画はここまで
 
 
 

@@ -1,0 +1,42 @@
+#include "SDL_all.h"
+#include "SDLFps.hpp"
+#include "SDLTimer.hpp"
+
+int SetWindow(SDL_Window* window, SDL_bool isSmall){
+    float opacity = 0.85; 
+    if (isSmall){
+        SDL_SetWindowOpacity(window, opacity);
+        SDL_SetWindowSize(window, SMALL_SCW,SMALL_SCH);
+        SDL_SetWindowAlwaysOnTop(window,isSmall);
+        isSmall = SDL_FALSE;
+        SDL_SetWindowBordered(window,isSmall);
+    }else{
+        
+        SDL_SetWindowSize(window,SCREEN_WIDTH,SCREEN_HEIGHT);
+        SDL_SetWindowAlwaysOnTop(window,isSmall);
+        isSmall = SDL_TRUE;
+        SDL_SetWindowBordered(window,isSmall);
+    }
+    
+    return 0;
+}
+
+/*int drawWindow(SDL_Renderer* renderer, SDL_Texture *ftex, SDL_bool isSmall,SDL_Rect TaskRect, SDL_Rect MenuRect, SDL_Rect MenuBox,int menuLine){
+    if (isSmall){
+
+
+    }else{
+        SDL_SetRenderDrawColor(renderer,161,157,185,127);
+        SDL_RenderFillRect(renderer,&MenuRect);        
+        SDL_SetRenderDrawColor(renderer,110,105,148,255);//線の色
+        SDL_RenderDrawLine(renderer,menuLine,0,menuLine,SCREEN_HEIGHT);
+        SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/10,menuLine,SCREEN_HEIGHT/10);
+        SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/5,menuLine,SCREEN_HEIGHT/5);
+        SDL_RenderDrawLine(renderer,0,SCREEN_HEIGHT/10*3,menuLine,SCREEN_HEIGHT/10*3);
+        SDL_RenderDrawRect(renderer,&TaskRect);
+        SDL_RenderCopy(renderer,ftex,NULL, &MenuBox);
+    }
+
+    return 0;
+}*/
+

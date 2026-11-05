@@ -8,7 +8,7 @@
 #define SCREEN_WIDTH 640*2
 #define SCREEN_HEIGHT 480*2
 #define SMALL_SCW 300 
-#define SMALL_SCH 200
+#define SMALL_SCH 600
 #define FONTSIZE 32 
 
 #endif /* SDL_all_h_ */

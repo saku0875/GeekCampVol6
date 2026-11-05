@@ -21,6 +21,7 @@ add_executable(SDLGame ## WIN32はRelease版用,GUIアプリとしてビルド
     src/main.cpp
     src/SDLfps.cpp
     src/SDLTimer.cpp
+    src/Window.cpp
 )
 
 target_link_libraries(SDLGame PRIVATE
