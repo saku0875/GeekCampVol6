@@ -3,15 +3,17 @@
 #include "SDLTimer.hpp"
 
 int SetWindow(SDL_Window* window, SDL_bool isSmall){
-    float opacity = 0.85; 
+    float opacity; 
     if (isSmall){
+        float opacity = 0.85;
         SDL_SetWindowOpacity(window, opacity);
         SDL_SetWindowSize(window, SMALL_SCW,SMALL_SCH);
         SDL_SetWindowAlwaysOnTop(window,isSmall);
         isSmall = SDL_FALSE;
         SDL_SetWindowBordered(window,isSmall);
     }else{
-        
+        float opacity = 1.0;
+        SDL_SetWindowOpacity(window, opacity);
         SDL_SetWindowSize(window,SCREEN_WIDTH,SCREEN_HEIGHT);
         SDL_SetWindowAlwaysOnTop(window,isSmall);
         isSmall = SDL_TRUE;

@@ -28,12 +28,12 @@ int main(int argc, char* argv[]){
     SDL_Rect MenuRect={0,0,menuLine,SCREEN_HEIGHT};
     SDL_Rect MenuBox ={0,0,menuLine,SCREEN_HEIGHT/10};
     //Smallサイズの領域
-    SDL_Rect s_taskMenuLineRect = {0,SMALL_SCH/5,SMALL_SCW, int(SMALL_SCH/5*4)};
-    SDL_Rect s_taskMenuRect = {10,SMALL_SCH/5+10,SMALL_SCW-20,int(SMALL_SCH/5*4-20)};
-    SDL_Rect s_charRect = {10,10,SMALL_SCW/3,SMALL_SCH/5-20};
-    SDL_Rect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/2, SMALL_SCH/4-20};
+    SDL_Rect s_taskMenuLineRect = {0,SMALL_SCH/6,SMALL_SCW, int(SMALL_SCH/6*5)};
+    SDL_Rect s_taskMenuRect = {10,SMALL_SCH/6+10,SMALL_SCW-20,int(SMALL_SCH/6*5-20)};
+    SDL_Rect s_charRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-20};
+    SDL_Rect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/3*2, SMALL_SCH/6-20};
     
-    Uint32 uFlames;
+    Uint32 uFlames = 0;
     const Uint8 *pKeyStatus;
     bool bQuit = false;
     bool most_front = false;
