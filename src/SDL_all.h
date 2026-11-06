@@ -5,6 +5,7 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_mixer/SDL_mixer.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <stdio.h>
 #define SCREEN_WIDTH 640*2
 #define SCREEN_HEIGHT 480*2
 #define SMALL_SCW 300 

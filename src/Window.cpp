@@ -2,6 +2,7 @@
 #include "SDLFps.hpp"
 #include "SDLTimer.hpp"
 
+
 int SetWindow(SDL_Window* window, bool isSmall){
     float opacity; 
     if (isSmall){
@@ -25,8 +26,8 @@ int SetWindow(SDL_Window* window, bool isSmall){
 
 SDL_HitTestResult  SmallWindow_Drag(SDL_Window *window, const SDL_Point *area, void *callback_data ){
     bool isChar = false;
-    isChar = SDL_PointInRect(area, (SDL_Rect(*))callback_data);
-    if(isChar == true){
+    isChar = SDL_PointInRectFloat((SDL_FPoint(*))area,(SDL_FRect(*))callback_data);
+    if(isChar == false){
         return SDL_HITTEST_DRAGGABLE;
     }
     return SDL_HITTEST_NORMAL;

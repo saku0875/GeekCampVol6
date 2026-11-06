@@ -31,7 +31,7 @@ int main(int argc, char* argv[]){
     //Smallサイズの領域
     SDL_FRect s_taskMenuLineRect = {0,SMALL_SCH/6,SMALL_SCW, int(SMALL_SCH/6*5)};
     SDL_FRect s_taskMenuRect = {10,SMALL_SCH/6+10,SMALL_SCW-20,int(SMALL_SCH/6*5-20)};
-    SDL_Rect s_charRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
+    SDL_FRect s_charRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
     SDL_FRect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/3*2, SMALL_SCH/6-20};
     
     Uint32 uFlames = 0;
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
 
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
-    window = SDL_CreateWindow("Simple Game", SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    window = SDL_CreateWindow("roommate", SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_TRANSPARENT);
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
     renderer = SDL_CreateRenderer(window, nullptr);
     SDL_SetRenderDrawBlendMode(renderer, blendMode);
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]){
         //描画処理
         //フルサイズ画面のホーム描画処理
         if (isSmall){
-            SDL_SetRenderDrawColor(renderer,186,183,204,255);
+            SDL_SetRenderDrawColor(renderer,0,0,0,0);
             SDL_RenderClear(renderer);
             SDL_SetRenderDrawColor(renderer,110,105,148,255);//線の色
             SDL_RenderFillRect(renderer,&s_taskMenuLineRect);
@@ -137,6 +137,7 @@ int main(int argc, char* argv[]){
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     TTF_Quit();
+
     SDL_Quit();
 
     return 0;
