@@ -6,15 +6,11 @@
 int SetWindow(SDL_Window* window, bool isSmall){
     float opacity; 
     if (isSmall){
-        float opacity = 0.85;
-        SDL_SetWindowOpacity(window, opacity);
         SDL_SetWindowSize(window, SMALL_SCW,SMALL_SCH);
         SDL_SetWindowAlwaysOnTop(window,isSmall);
         isSmall = false;
         SDL_SetWindowBordered(window,isSmall);
     }else{
-        float opacity = 1.0;
-        SDL_SetWindowOpacity(window, opacity);
         SDL_SetWindowSize(window,SCREEN_WIDTH,SCREEN_HEIGHT);
         SDL_SetWindowAlwaysOnTop(window,isSmall);
         isSmall = true;
@@ -26,8 +22,10 @@ int SetWindow(SDL_Window* window, bool isSmall){
 
 SDL_HitTestResult  SmallWindow_Drag(SDL_Window *window, const SDL_Point *area, void *callback_data ){
     bool isChar = false;
-    isChar = SDL_PointInRectFloat((SDL_FPoint(*))area,(SDL_FRect(*))callback_data);
-    if(isChar == false){
+    
+    isChar = SDL_PointInRect(area,(SDL_Rect(*))callback_data);
+    printf("%d",isChar);
+    if(isChar == true){
         return SDL_HITTEST_DRAGGABLE;
     }
     return SDL_HITTEST_NORMAL;

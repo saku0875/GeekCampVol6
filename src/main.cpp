@@ -32,6 +32,7 @@ int main(int argc, char* argv[]){
     SDL_FRect s_taskMenuLineRect = {0,SMALL_SCH/6,SMALL_SCW, int(SMALL_SCH/6*5)};
     SDL_FRect s_taskMenuRect = {10,SMALL_SCH/6+10,SMALL_SCW-20,int(SMALL_SCH/6*5-20)};
     SDL_FRect s_charRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
+    SDL_Rect JudgeCharRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
     SDL_FRect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/3*2, SMALL_SCH/6-20};
     
     Uint32 uFlames = 0;
@@ -54,6 +55,7 @@ int main(int argc, char* argv[]){
     charSuf = IMG_Load("assets/minikyaraTest.png");
     minicharTex = SDL_CreateTextureFromSurface(renderer,charSuf);
     SDL_DestroySurface(charSuf);
+
     
     //フォントのロード
     font = TTF_OpenFont("assets/BestTen-DOT.otf",FONTSIZE);
@@ -87,7 +89,7 @@ int main(int argc, char* argv[]){
         }
         SetWindow(window,isSmall);
         if(isSmall){
-            SDL_SetWindowHitTest(window, SmallWindow_Drag, &s_charRect);
+            SDL_SetWindowHitTest(window, SmallWindow_Drag, &JudgeCharRect);
         }
 
 
