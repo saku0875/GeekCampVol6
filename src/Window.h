@@ -4,7 +4,7 @@
 #include "SDLFps.hpp"
 #include "SDLTimer.hpp"
 
-int SetWindow(SDL_Window* window, SDL_bool isSmall);
+int SetWindow(SDL_Window* window, bool isSmall);
 SDL_HitTestResult SmallWindow_Drag(SDL_Window *window,const SDL_Point *area,void *callback_data );
 
 

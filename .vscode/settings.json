@@ -36,9 +36,13 @@
     "editor.semanticHighlighting.enabled": true
   },
 
-  // CMakeのビルド設定からSDL2の情報を取得
+  // CMakeのビルド設定からSDL3の情報を取得
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cmake.buildDirectory": "${workspaceFolder}/build/sdl3",
+  "cmake.configureSettings": {
+    "CMAKE_CXX_COMPILER": "C:/msys64/ucrt64/bin/g++.exe",
+    "CMAKE_PREFIX_PATH": "C:/msys64/ucrt64"
+  },
   "cmake.configureOnOpen": true,
 
   // CMake未構成時やビルド対象外の.cppにも実環境と同じ設定を使用
@@ -47,6 +51,6 @@
   "C_Cpp.default.cppStandard": "c++17",
   "C_Cpp.default.includePath": [
     "${workspaceFolder}/src",
-    "C:/msys64/ucrt64/include/SDL2"
+    "C:/msys64/ucrt64/include"
   ]
 }

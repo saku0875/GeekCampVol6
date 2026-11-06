@@ -2,21 +2,21 @@
 #include "SDLFps.hpp"
 #include "SDLTimer.hpp"
 
-int SetWindow(SDL_Window* window, SDL_bool isSmall){
+int SetWindow(SDL_Window* window, bool isSmall){
     float opacity; 
     if (isSmall){
         float opacity = 0.85;
         SDL_SetWindowOpacity(window, opacity);
         SDL_SetWindowSize(window, SMALL_SCW,SMALL_SCH);
         SDL_SetWindowAlwaysOnTop(window,isSmall);
-        isSmall = SDL_FALSE;
+        isSmall = false;
         SDL_SetWindowBordered(window,isSmall);
     }else{
         float opacity = 1.0;
         SDL_SetWindowOpacity(window, opacity);
         SDL_SetWindowSize(window,SCREEN_WIDTH,SCREEN_HEIGHT);
         SDL_SetWindowAlwaysOnTop(window,isSmall);
-        isSmall = SDL_TRUE;
+        isSmall = true;
         SDL_SetWindowBordered(window,isSmall);
     }
     
@@ -24,9 +24,9 @@ int SetWindow(SDL_Window* window, SDL_bool isSmall){
 }
 
 SDL_HitTestResult  SmallWindow_Drag(SDL_Window *window, const SDL_Point *area, void *callback_data ){
-    SDL_bool isChar = SDL_FALSE;
+    bool isChar = false;
     isChar = SDL_PointInRect(area, (SDL_Rect(*))callback_data);
-    if(isChar == SDL_TRUE){
+    if(isChar == true){
         return SDL_HITTEST_DRAGGABLE;
     }
     return SDL_HITTEST_NORMAL;
