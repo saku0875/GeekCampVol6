@@ -24,7 +24,6 @@ SDL_HitTestResult  SmallWindow_Drag(SDL_Window *window, const SDL_Point *area, v
     bool isChar = false;
     
     isChar = SDL_PointInRect(area,(SDL_Rect(*))callback_data);
-    printf("%d",isChar);
     if(isChar == true){
         return SDL_HITTEST_DRAGGABLE;
     }

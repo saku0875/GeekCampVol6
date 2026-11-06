@@ -11,7 +11,8 @@ public:
     virtual ~TaskCard();
     //DB操作
     Task ReadTaskDB(int id,bool flags);
-    //Task WriteTaskDB(string taskContent);
+    int newWriteTaskDB(string taskContent);
+    //int flagChange(int id, bool flags);
     //描画処理
     //int DrawTaskCard(SDL_Renderer* renderer, Task task, SDL_FRect TaskRect);
 };
