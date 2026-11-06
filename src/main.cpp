@@ -1,9 +1,10 @@
-#include "SDL_all.h"
+#include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include "SDL_all.h"
 #include "SDLFps.hpp"
 #include "SDLTimer.hpp"
 #include "Window.h"
-
+#include "TaskCard.hpp"
 
 int main(int argc, char* argv[]){
     SDL_Window* window = NULL;
@@ -21,6 +22,8 @@ int main(int argc, char* argv[]){
     SDL_Color fColor = {0,0,0,255};
     bool isSmall = false;
     SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND;
+    TaskCard taskCard;
+    Task taskTest;
 
 
     int menuLine = int(SCREEN_WIDTH*0.7) -SCREEN_WIDTH/2; 
@@ -39,7 +42,6 @@ int main(int argc, char* argv[]){
     const bool *pKeyStatus;
     bool bQuit = false;
     bool most_front = false;
-    int num_window = 0;
     float fFPS;
       
 
@@ -62,6 +64,12 @@ int main(int argc, char* argv[]){
     fsuf = TTF_RenderText_Blended(font,"メニュー",0,fColor);
     ftex = SDL_CreateTextureFromSurface(renderer,fsuf);
     SDL_DestroySurface(fsuf);
+    
+    int id = 1;
+    int ATflags = false;
+    taskTest = taskCard.ReadTaskDB(id,ATflags);
+    std::cout << taskTest.id << taskTest.date << taskTest.TaskContent << taskTest.flags << std::endl;
+
     
     //ゲームループ
     while (bQuit == false)
