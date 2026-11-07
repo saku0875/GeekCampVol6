@@ -157,3 +157,39 @@ int TaskCard::flagChange(int id){
     return ofs_csv_file.fail() ? -1 : 0;
 }
     
+int TaskCard::DrawTaskCard(SDL_Renderer* renderer, Task task, SDL_FRect TaskRect,TTF_Font *font){
+    //フラグに合わせて背景色変更
+    if (task.flags){
+        SDL_SetRenderDrawColor(renderer,110,105,148,255);
+    }else{
+        SDL_SetRenderDrawColor(renderer,161,157,185,255);
+    }
+    SDL_RenderFillRect(renderer,&TaskRect);
+    /*SDL_FRect BackGround = {TaskRect.x + 10,TaskRect.y +10 ,TaskRect.w -20,TaskRect.h -20};
+    SDL_SetRenderDrawColor(renderer,243, 224, 243,255);
+    SDL_RenderFillRect(renderer,&BackGround);*/
+
+    //チェックボックスの描画
+    float boxSize = float(TTF_GetFontHeight(font));
+    SDL_FRect checkRect = {TaskRect.x+TaskRect.x/10, TaskRect.y + TaskRect.h/2 - boxSize/2, boxSize, boxSize};
+    SDL_SetRenderDrawColor(renderer,0,0,0,255);
+    if (task.flags){
+        SDL_RenderFillRect(renderer,&checkRect);
+    }else{
+        SDL_RenderRect(renderer,&checkRect);
+    }
+
+    //テキスト描画
+    SDL_Color textColor = {0,0,0,255};
+    SDL_Surface* textSurface = TTF_RenderText_Blended(font,task.TaskContent.c_str(),0,textColor);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer,textSurface);
+    SDL_DestroySurface(textSurface);
+    SDL_FRect textRect = {
+        TaskRect.x + boxSize + 8.0f, TaskRect.y,
+        TaskRect.w - boxSize - 8.0f, TaskRect.h
+    };
+    SDL_RenderTexture(renderer,textTexture,nullptr,&textRect);
+    SDL_DestroyTexture(textTexture);
+
+    return 0;
+}

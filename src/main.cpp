@@ -34,6 +34,7 @@ int main(int argc, char* argv[]){
     //Smallサイズの領域
     SDL_FRect s_taskMenuLineRect = {0,SMALL_SCH/6,SMALL_SCW, int(SMALL_SCH/6*5)};
     SDL_FRect s_taskMenuRect = {10,SMALL_SCH/6+10,SMALL_SCW-20,int(SMALL_SCH/6*5-20)};
+    SDL_FRect s_task_A = {10,SMALL_SCH/6+10,SMALL_SCW-20,int((SMALL_SCH/6*5-20)/10)};
     SDL_FRect s_charRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
     SDL_Rect JudgeCharRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
     SDL_FRect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/3*2, SMALL_SCH/6-20};
@@ -113,6 +114,7 @@ int main(int argc, char* argv[]){
             SDL_RenderFillRect(renderer,&s_taskMenuRect);        
             SDL_FRect s_charDrawRect = {float(s_charRect.x), float(s_charRect.y), float(s_charRect.w), float(s_charRect.h)};
             SDL_RenderTexture(renderer,minicharTex,NULL, &s_charDrawRect);
+            taskCard.DrawTaskCard(renderer,taskTest,s_task_A,font);
         }
         else{
             SDL_SetRenderDrawColor(renderer,186,183,204,255);

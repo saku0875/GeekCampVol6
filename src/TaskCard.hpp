@@ -14,7 +14,7 @@ public:
     int newWriteTaskDB(string taskContent);
     int flagChange(int id);
     //描画処理
-    int DrawTaskCard(SDL_Renderer* renderer, Task task, SDL_FRect TaskRect);
+    int DrawTaskCard(SDL_Renderer* renderer, Task task, SDL_FRect TaskRect, TTF_Font *font);
 };
 
 
