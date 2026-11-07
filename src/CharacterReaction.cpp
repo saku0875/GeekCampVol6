@@ -60,7 +60,7 @@ void InitCharacterReaction(CharacterReaction* reaction, SDL_Renderer* renderer, 
         reaction->fullTextures[i] = LoadCharacterTexture(renderer,fullPaths[i],&reaction->fullSources[i]);
         reaction->smallTextures[i] = LoadCharacterTexture(renderer,smallPaths[i],&reaction->smallSources[i]);
     }
-    reaction->speechFont = TTF_OpenFont("assets/BestTen-DOT.otf",16);
+    reaction->speechFont = TTF_OpenFont("assets/BestTen-DOT.otf",30);
 }
 
 static void ExpireCompletions(CharacterReaction* reaction, Uint64 now) {
@@ -163,6 +163,10 @@ void DrawCharacterReaction(CharacterReaction* reaction, SDL_Renderer* renderer,
         source = reaction->smallSources[reaction->pose];
     }
     SDL_FRect destination = FitImage(source.w,source.h,characterRect);
+    if (!isSmall){
+        // タスク領域の上辺を床にして、どの姿勢でも下端を揃える。
+        destination.y = characterRect.y + characterRect.h - destination.h;
+    }
     SDL_RenderTexture(renderer,texture,&source,&destination);
     if (reaction->speech.empty()){
         return;

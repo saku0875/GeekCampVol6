@@ -53,8 +53,8 @@ int main(int argc, char* argv[]){
         s_charRect.x + s_charRect.w + 8, 8,
         SMALL_SCW - (s_charRect.x + s_charRect.w + 8) - 8, SMALL_SCH / 6 - 16
     };
-    SDL_FRect fullCharRect = {8,SCREEN_HEIGHT - 180,(float)menuLine - 16,160};
-    SDL_FRect fullBubbleRect = {8,SCREEN_HEIGHT - 300,(float)menuLine - 16,110};
+    SDL_FRect fullCharRect;
+    SDL_FRect fullBubbleRect;
     
     SDL_FRect inputRect = {TaskRect.x,TaskRect.y,TaskRect.w,TaskRect.h / 10};
     Uint32 uFlames = 0;
@@ -77,6 +77,29 @@ int main(int argc, char* argv[]){
     SDL_DestroySurface(bubbleSurface);
     SDL_SetTextureScaleMode(bubbleTexture,SDL_SCALEMODE_NEAREST);
     InitCharacterReaction(&characterReaction,renderer,SDL_GetTicks());
+
+    float characterWidth = TaskRect.w / 3 * 2;
+    float characterHeight = 0;
+    for (int i = 0; i < CHARACTER_POSE_COUNT; i++){
+        if (i != CHARACTER_CONCERNED){
+            SDL_FRect source = characterReaction.fullSources[i];
+            float height = characterWidth * source.h / source.w;
+            if (height > characterHeight){
+                characterHeight = height;
+            }
+        }
+    }
+    float taskBottom = TaskRect.y + TaskRect.h;
+    if (TaskRect.y < characterHeight + 24){
+        TaskRect.y = characterHeight + 24;
+        TaskRect.h = taskBottom - TaskRect.y;
+    }
+    NotAchieveButton.y = TaskRect.y - NotAchieveButton.h;
+    AchieveButton.y = TaskRect.y - AchieveButton.h;
+    fullCharRect = {TaskRect.x + 8,TaskRect.y - characterHeight,characterWidth,characterHeight};
+    float fullBubbleWidth = TaskRect.x + TaskRect.w - (fullCharRect.x + fullCharRect.w + 16);
+    fullBubbleRect = {SCREEN_WIDTH - fullBubbleWidth*1.5 - 16,16,fullBubbleWidth*1.5,110*1.5};
+    inputRect = {TaskRect.x,TaskRect.y,TaskRect.w,TaskRect.h / 10};
 
     
     //フォントのロード

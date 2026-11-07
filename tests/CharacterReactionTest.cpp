@@ -183,6 +183,39 @@ static void TestDrawing(const char* previewPath) {
         SDL_RenderPresent(renderer);
         CHECK(PixelIs(canvas,(int)(balloon.x + balloon.w / 2),(int)(balloon.y + balloon.h / 2),10,60,90));
     }
+    // 寝そべり姿をタスク領域の幅の2/3にし、座り姿も同じ枠内に収める。
+    float floorWidth = 896.0f / 3 * 2;
+    SDL_FRect normalSource = reaction.fullSources[CHARACTER_NORMAL];
+    float floorHeight = floorWidth * normalSource.h / normalSource.w;
+    SDL_FRect floorCharacter = {328,24,floorWidth,floorHeight};
+    SDL_FRect floorBalloon = {floorCharacter.x + floorWidth + 16,24,270,110};
+    int floorY = (int)(24 + floorHeight);
+    reaction.speech.clear();
+    for (int pose = 0; pose < CHARACTER_POSE_COUNT; pose++){
+        reaction.pose = (CharacterPose)pose;
+        SDL_SetRenderDrawColor(renderer,10,60,90,255);
+        SDL_RenderClear(renderer);
+        DrawCharacterReaction(&reaction,renderer,bubble,false,floorCharacter,floorBalloon);
+        SDL_RenderPresent(renderer);
+        int lowestPixel = -1;
+        int leftPixel = 1280;
+        int rightPixel = 0;
+        for (int y = 0; y <= floorY; y++){
+            for (int x = 328; x < 328 + floorWidth; x++){
+                if (!PixelIs(canvas,x,y,10,60,90)){
+                    lowestPixel = y;
+                    if (x < leftPixel) leftPixel = x;
+                    if (x > rightPixel) rightPixel = x;
+                    CHECK(y >= 24);
+                }
+            }
+        }
+        CHECK(lowestPixel >= floorY - 2 && lowestPixel <= floorY);
+        if (pose == CHARACTER_NORMAL){
+            CHECK(rightPixel - leftPixel + 1 >= (int)floorWidth - 2);
+        }
+        CHECK(rightPixel - leftPixel + 1 <= floorWidth + 1);
+    }
     if (previewPath != NULL){
         SDL_SetRenderDrawColor(renderer,186,183,204,255);
         SDL_RenderClear(renderer);
