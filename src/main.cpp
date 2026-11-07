@@ -27,6 +27,10 @@ int main(int argc, char* argv[]){
     SDL_Color fColor = {0,0,0,255};
     bool isSmall = false;
     bool showAchieved = false;
+    bool inputActive = false;
+    bool imeConfirmPending = false;
+    string newTaskContent;
+    string compositionText;
     SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND;
     TaskCard taskCard;
     std::vector<SDL_FRect> checkRects;
@@ -47,8 +51,8 @@ int main(int argc, char* argv[]){
     SDL_Rect JudgeCharRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
     SDL_FRect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/3*2, SMALL_SCH/6-20};
     
+    SDL_FRect inputRect = {TaskRect.x,TaskRect.y,TaskRect.w,TaskRect.h / 10};
     Uint32 uFlames = 0;
-    const bool *pKeyStatus;
     bool bQuit = false;
     bool most_front = false;
     float fFPS;
@@ -77,7 +81,7 @@ int main(int argc, char* argv[]){
     fsuf = TTF_RenderText_Blended(sfont,"未達成",0,fColor);
     notAchieveTexture = SDL_CreateTextureFromSurface(renderer,fsuf);
     SDL_DestroySurface(fsuf);
-    fsuf = TTF_RenderText_Blended(sfont,"達成済み",0,fColor);
+    fsuf = TTF_RenderText_Blended(sfont,"達成済",0,fColor);
     achieveTexture = SDL_CreateTextureFromSurface(renderer,fsuf);
     SDL_DestroySurface(fsuf);
     
@@ -85,14 +89,105 @@ int main(int argc, char* argv[]){
     while (bQuit == false)
    {
         timeModifyFPS.restart();
+        if (compositionText.empty()){
+            imeConfirmPending = false;
+        }
         SDL_PumpEvents();
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_EVENT_QUIT){
                 bQuit = true;
             }
+            if (event.type == SDL_EVENT_TEXT_EDITING && inputActive){
+                compositionText = event.edit.text;
+                if (!compositionText.empty()){
+                    imeConfirmPending = true;
+                }
+            }
+            if (event.type == SDL_EVENT_TEXT_INPUT && inputActive){
+                string inputText = event.text.text;
+                for (int i = 0; i < (int)inputText.size(); i++){
+                    if (inputText[i] != ',' && inputText[i] != '\n' && inputText[i] != '\r'){
+                        newTaskContent += inputText[i];
+                    }
+                }
+                compositionText.clear();
+            }
+            if (event.type == SDL_EVENT_KEY_UP
+                && (event.key.key == SDLK_RETURN || event.key.key == SDLK_KP_ENTER)){
+                if (compositionText.empty()){
+                    imeConfirmPending = false;
+                }
+            }
+            if (event.type == SDL_EVENT_KEY_DOWN){
+                if (event.key.key == SDLK_ESCAPE && !event.key.repeat){
+                    if (inputActive){
+                        inputActive = false;
+                        compositionText.clear();
+                        imeConfirmPending = false;
+                        SDL_StopTextInput(window);
+                    }else{
+                        bQuit = true;
+                    }
+                }else if (inputActive){
+                    if (event.key.key == SDLK_RETURN || event.key.key == SDLK_KP_ENTER){
+                        if (!event.key.repeat && compositionText.empty() && !imeConfirmPending
+                            && !newTaskContent.empty()){
+                            taskCard.newWriteTaskDB(newTaskContent);
+                            newTaskContent.clear();
+                        }
+                    }else if (event.key.key == SDLK_BACKSPACE && compositionText.empty()
+                        && !imeConfirmPending && !newTaskContent.empty()){
+                        int bytePos = (int)newTaskContent.size() - 1;
+                        while (bytePos > 0 && ((unsigned char)newTaskContent[bytePos] & 0xC0) == 0x80){
+                            bytePos--;
+                        }
+                        newTaskContent.erase(bytePos);
+                    }
+                }else if (event.key.key == SDLK_Q && !event.key.repeat){
+                    if (!most_front){
+                        most_front = true;
+                        isSmall = true;
+                    }else{
+                        most_front = false;
+                        isSmall = false;
+                    }
+                    checkRects.clear();
+                    checkTaskIds.clear();
+                    if (isSmall){
+                        inputRect = {s_taskMenuRect.x,s_taskMenuRect.y,s_taskMenuRect.w,s_taskMenuRect.h / 10};
+                    }else{
+                        inputRect = {TaskRect.x,TaskRect.y,TaskRect.w,TaskRect.h / 10};
+                    }
+                }
+            }
+            if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST && inputActive){
+                inputActive = false;
+                compositionText.clear();
+                imeConfirmPending = false;
+                SDL_StopTextInput(window);
+            }
             if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && event.button.button == SDL_BUTTON_LEFT){
                 bool buttonClicked = false;
+                if (!showAchieved
+                    && event.button.x >= inputRect.x
+                    && event.button.x < inputRect.x + inputRect.w
+                    && event.button.y >= inputRect.y
+                    && event.button.y < inputRect.y + inputRect.h){
+                    inputActive = true;
+                    SDL_StartTextInput(window);
+                    SDL_Rect textInputArea = {
+                        (int)inputRect.x, (int)inputRect.y,
+                        (int)inputRect.w, (int)inputRect.h
+                    };
+                    SDL_SetTextInputArea(window,&textInputArea,0);
+                    buttonClicked = true;
+                }else if (inputActive){
+                    inputActive = false;
+                    compositionText.clear();
+                    imeConfirmPending = false;
+                    SDL_StopTextInput(window);
+                }
                 bool previousShowAchieved = showAchieved;
                 if (!isSmall){
                     if (event.button.x >= NotAchieveButton.x
@@ -124,19 +219,6 @@ int main(int argc, char* argv[]){
                         }
                     }
                 }
-            }
-        }
-        pKeyStatus = SDL_GetKeyboardState(nullptr);
-        if (pKeyStatus[SDL_SCANCODE_ESCAPE]){
-            bQuit = true;
-        }
-        if (pKeyStatus[SDL_SCANCODE_Q]){
-            if (!most_front){
-                most_front = true;
-                isSmall = true;
-            }else{
-                most_front = false;
-                isSmall = false;
             }
         }
         SetWindow(window,isSmall);
@@ -218,14 +300,46 @@ int main(int argc, char* argv[]){
         //タスクの描画
         SDL_FRect taskArea;
         int maxTasks;
+        int normalizeLength;
         if (isSmall){
             taskArea = s_taskMenuRect;
             maxTasks = 10;
+            normalizeLength = 10;
         }else{
             taskArea = TaskRect;
             maxTasks = 10;
+            normalizeLength = 40;
         }
         float taskHeight = taskArea.h / maxTasks;
+        int firstTaskRow = 0;
+        if (!showAchieved){
+            firstTaskRow = 1;
+            maxTasks--;
+            inputRect = {taskArea.x,taskArea.y,taskArea.w,taskHeight};
+            SDL_SetRenderDrawColor(renderer,161,157,185,255);
+            SDL_RenderFillRect(renderer,&inputRect);
+            if (inputActive){
+                SDL_SetRenderDrawColor(renderer,0,0,0,255);
+                SDL_RenderRect(renderer,&inputRect);
+            }
+            string inputLabel = newTaskContent + compositionText;
+            if (inputLabel.empty()){
+                inputLabel = "タスクを追加……";
+            }
+            inputLabel = NormalizeText(inputLabel,normalizeLength);
+            TTF_Font* inputFont;
+            if (isSmall){
+                inputFont = sfont;
+            }else{
+                inputFont = Ffont;
+            }
+            SDL_Surface* inputSurface = TTF_RenderText_Blended(inputFont,inputLabel.c_str(),0,fColor);
+            SDL_Texture* inputTexture = SDL_CreateTextureFromSurface(renderer,inputSurface);
+            SDL_DestroySurface(inputSurface);
+            SDL_FRect inputTextRect = {inputRect.x + 8,inputRect.y + 5,inputRect.w - 16,inputRect.h - 10};
+            SDL_RenderTexture(renderer,inputTexture,NULL,&inputTextRect);
+            SDL_DestroyTexture(inputTexture);
+        }
         int taskCount = (int)tasks.size();
         if (taskCount > maxTasks){
             taskCount = maxTasks;
@@ -234,7 +348,7 @@ int main(int argc, char* argv[]){
         checkTaskIds.clear();
         for (int i = 0; i < taskCount; i++){
             SDL_FRect rowRect = {
-                taskArea.x, taskArea.y + i * taskHeight,
+                taskArea.x, taskArea.y + (i + firstTaskRow) * taskHeight,
                 taskArea.w, taskHeight
             };
             TTF_Font* taskFont;
@@ -251,17 +365,9 @@ int main(int argc, char* argv[]){
             };
             checkRects.push_back(checkRect);
             checkTaskIds.push_back(tasks[i].id);
-            if(isSmall){
-                taskCard.DrawTaskCard(renderer,tasks[i],rowRect,sfont);
-            }else{
-                Task displayTask = tasks[i];
-                int charCount = 0;
-                while (charCount < 40){
-                    displayTask.TaskContent += ' ';
-                    charCount++;
-                }
-                taskCard.DrawTaskCard(renderer,displayTask,rowRect,Ffont);
-            }
+            Task displayTask = tasks[i];
+            displayTask.TaskContent = NormalizeText(displayTask.TaskContent,normalizeLength);
+            taskCard.DrawTaskCard(renderer,displayTask,rowRect,taskFont);
             
         }
 
@@ -278,6 +384,7 @@ int main(int argc, char* argv[]){
         timeModify.fpsadjust(30, timeModifyFPS);
     }
     //破棄
+    SDL_StopTextInput(window);
     SDL_DestroyTexture(notAchieveTexture);
     SDL_DestroyTexture(achieveTexture);
     SDL_DestroyRenderer(renderer);
