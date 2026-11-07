@@ -14,7 +14,8 @@
 #define SCREEN_HEIGHT 480*2
 #define SMALL_SCW 300 
 #define SMALL_SCH 600
-#define FONTSIZE 32
+#define FONTSIZE 20
+#define SMALL_FONTSIZE 32
 
 using std::string;
 using std::ifstream;

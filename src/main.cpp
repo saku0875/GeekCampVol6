@@ -5,6 +5,8 @@
 #include "SDLTimer.hpp"
 #include "Window.h"
 #include "TaskCard.hpp"
+#include <vector>
+#include <algorithm>
 
 int main(int argc, char* argv[]){
     SDL_Window* window = NULL;
@@ -13,7 +15,8 @@ int main(int argc, char* argv[]){
     SDLTimer timerCountFPS;
     SDLTimer timeModifyFPS;
     SDLFps timeModify; 
-    TTF_Font *font;
+    TTF_Font *sfont;
+    TTF_Font *Ffont;
     SDL_Surface *fsuf = nullptr;
     SDL_Texture *ftex = nullptr;
     SDL_Surface *charSuf = nullptr;
@@ -23,7 +26,6 @@ int main(int argc, char* argv[]){
     bool isSmall = false;
     SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND;
     TaskCard taskCard;
-    Task taskTest;
 
 
     int menuLine = int(SCREEN_WIDTH*0.7) -SCREEN_WIDTH/2; 
@@ -34,7 +36,6 @@ int main(int argc, char* argv[]){
     //Smallサイズの領域
     SDL_FRect s_taskMenuLineRect = {0,SMALL_SCH/6,SMALL_SCW, int(SMALL_SCH/6*5)};
     SDL_FRect s_taskMenuRect = {10,SMALL_SCH/6+10,SMALL_SCW-20,int(SMALL_SCH/6*5-20)};
-    SDL_FRect s_task_A = {10,SMALL_SCH/6+10,SMALL_SCW-20,int((SMALL_SCH/6*5-20)/10)};
     SDL_FRect s_charRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
     SDL_Rect JudgeCharRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
     SDL_FRect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/3*2, SMALL_SCH/6-20};
@@ -61,17 +62,11 @@ int main(int argc, char* argv[]){
 
     
     //フォントのロード
-    font = TTF_OpenFont("assets/BestTen-DOT.otf",FONTSIZE);
-    fsuf = TTF_RenderText_Blended(font,"メニュー",0,fColor);
+    Ffont = TTF_OpenFont("assets/BestTen-DOT.otf",FONTSIZE);
+    sfont = TTF_OpenFont("assets/BestTen-DOT.otf",SMALL_FONTSIZE);
+    fsuf = TTF_RenderText_Blended(sfont,"メニュー",0,fColor);
     ftex = SDL_CreateTextureFromSurface(renderer,fsuf);
     SDL_DestroySurface(fsuf);
-    
-    int id = 1;
-    int ATflags = false;
-    taskTest = taskCard.ReadTaskDB(id,ATflags);
-    std::string NewTaskContent = "gatiiku";
-    taskCard.newWriteTaskDB(NewTaskContent);
-    taskCard.flagChange(id);
     
     //ゲームループ
     while (bQuit == false)
@@ -105,6 +100,30 @@ int main(int argc, char* argv[]){
 
         //描画処理
         //フルサイズ画面のホーム描画処理
+        std::vector<int> taskIds;
+        ifstream taskFile("DB/Test.csv");
+        string line;
+        while (getline(taskFile,line)){
+            istringstream row(line);
+            string field;
+            getline(row,field,',');
+            taskIds.push_back(std::stoi(field));
+        }
+        taskFile.close();
+        std::sort(taskIds.begin(),taskIds.end());
+
+        std::vector<Task> tasks;
+        for (int i = 0; i < (int)taskIds.size(); i++){
+            int id = taskIds[i];
+            if (i > 0 && id == taskIds[i - 1]){
+                continue;
+            }
+            Task task = taskCard.ReadTaskDB(id,false);
+            if (task.id == id){
+                tasks.push_back(task);
+            }
+        }
+
         if (isSmall){
             SDL_SetRenderDrawColor(renderer,0,0,0,0);
             SDL_RenderClear(renderer);
@@ -114,7 +133,6 @@ int main(int argc, char* argv[]){
             SDL_RenderFillRect(renderer,&s_taskMenuRect);        
             SDL_FRect s_charDrawRect = {float(s_charRect.x), float(s_charRect.y), float(s_charRect.w), float(s_charRect.h)};
             SDL_RenderTexture(renderer,minicharTex,NULL, &s_charDrawRect);
-            taskCard.DrawTaskCard(renderer,taskTest,s_task_A,font);
         }
         else{
             SDL_SetRenderDrawColor(renderer,186,183,204,255);
@@ -133,6 +151,39 @@ int main(int argc, char* argv[]){
 
 
 
+        //タスクの描画
+        SDL_FRect taskArea;
+        int maxTasks;
+        if (isSmall){
+            taskArea = s_taskMenuRect;
+            maxTasks = 10;
+        }else{
+            taskArea = TaskRect;
+            maxTasks = 10;
+        }
+        float taskHeight = taskArea.h / maxTasks;
+        int taskCount = (int)tasks.size();
+        if (taskCount > maxTasks){
+            taskCount = maxTasks;
+        }
+        for (int i = 0; i < taskCount; i++){
+            SDL_FRect rowRect = {
+                taskArea.x + 4, taskArea.y + i * taskHeight,
+                taskArea.w, taskHeight
+            };
+            if(isSmall){
+                taskCard.DrawTaskCard(renderer,tasks[i],rowRect,sfont);
+            }else{
+                Task displayTask = tasks[i];
+                int charCount = 0;
+                while (charCount < 40){
+                    displayTask.TaskContent += ' ';
+                    charCount++;
+                }
+                taskCard.DrawTaskCard(renderer,displayTask,rowRect,Ffont);
+            }
+            
+        }
 
         SDL_RenderPresent(renderer);
 

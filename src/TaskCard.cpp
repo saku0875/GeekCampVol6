@@ -171,7 +171,7 @@ int TaskCard::DrawTaskCard(SDL_Renderer* renderer, Task task, SDL_FRect TaskRect
 
     //チェックボックスの描画
     float boxSize = float(TTF_GetFontHeight(font));
-    SDL_FRect checkRect = {TaskRect.x+TaskRect.x/10, TaskRect.y + TaskRect.h/2 - boxSize/2, boxSize, boxSize};
+    SDL_FRect checkRect = {TaskRect.x+TaskRect.x/10 + 4, TaskRect.y + TaskRect.h/2 - boxSize/2, boxSize, boxSize};
     SDL_SetRenderDrawColor(renderer,0,0,0,255);
     if (task.flags){
         SDL_RenderFillRect(renderer,&checkRect);
@@ -184,9 +184,10 @@ int TaskCard::DrawTaskCard(SDL_Renderer* renderer, Task task, SDL_FRect TaskRect
     SDL_Surface* textSurface = TTF_RenderText_Blended(font,task.TaskContent.c_str(),0,textColor);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer,textSurface);
     SDL_DestroySurface(textSurface);
+    float textX = checkRect.x + checkRect.w + 8.0f;
     SDL_FRect textRect = {
-        TaskRect.x + boxSize + 8.0f, TaskRect.y,
-        TaskRect.w - boxSize - 8.0f, TaskRect.h
+        textX, TaskRect.y+5,
+        TaskRect.x + TaskRect.w - textX, TaskRect.h-10
     };
     SDL_RenderTexture(renderer,textTexture,nullptr,&textRect);
     SDL_DestroyTexture(textTexture);
