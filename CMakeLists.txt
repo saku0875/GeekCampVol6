@@ -23,6 +23,7 @@ add_executable(SDLGame ## WIN32はRelease版用,GUIアプリとしてビルド
     src/Window.cpp
     src/TaskCard.cpp
     src/Function.cpp
+    src/CharacterReaction.cpp
 )
 
 target_link_libraries(SDLGame PRIVATE
@@ -32,3 +33,19 @@ target_link_libraries(SDLGame PRIVATE
     SDL3_mixer::SDL3_mixer
     SDL3_net::SDL3_net
 )
+
+include(CTest)
+if(BUILD_TESTING)
+    add_executable(CharacterReactionTests
+        tests/CharacterReactionTest.cpp
+        src/CharacterReaction.cpp
+    )
+    target_include_directories(CharacterReactionTests PRIVATE src)
+    target_link_libraries(CharacterReactionTests PRIVATE
+        SDL3::SDL3
+        SDL3_image::SDL3_image
+        SDL3_ttf::SDL3_ttf
+    )
+    add_test(NAME CharacterReaction COMMAND CharacterReactionTests)
+    set_tests_properties(CharacterReaction PROPERTIES WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()

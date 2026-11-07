@@ -5,6 +5,7 @@
 #include "SDLTimer.hpp"
 #include "Window.h"
 #include "TaskCard.hpp"
+#include "CharacterReaction.hpp"
 #include <vector>
 #include <algorithm>
 
@@ -21,9 +22,8 @@ int main(int argc, char* argv[]){
     SDL_Texture *ftex = nullptr;
     SDL_Texture *notAchieveTexture = nullptr;
     SDL_Texture *achieveTexture = nullptr;
-    SDL_Surface *charSuf = nullptr;
-    SDL_Texture *minicharTex = nullptr;
-    SDL_Texture *charTex = nullptr;
+    SDL_Texture *bubbleTexture = nullptr;
+    CharacterReaction characterReaction;
     SDL_Color fColor = {0,0,0,255};
     bool isSmall = false;
     bool showAchieved = false;
@@ -49,7 +49,12 @@ int main(int argc, char* argv[]){
     SDL_FRect s_taskMenuRect = {10,SMALL_SCH/6+10,SMALL_SCW-20,int(SMALL_SCH/6*5-20)};
     SDL_FRect s_charRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
     SDL_Rect JudgeCharRect = {10,10,SMALL_SCH/6,SMALL_SCH/6-10};
-    SDL_FRect s_fukidashiRect = {SMALL_SCW/3 + 20, 40, SMALL_SCW/3*2, SMALL_SCH/6-20};
+    SDL_FRect s_fukidashiRect = {
+        s_charRect.x + s_charRect.w + 8, 8,
+        SMALL_SCW - (s_charRect.x + s_charRect.w + 8) - 8, SMALL_SCH / 6 - 16
+    };
+    SDL_FRect fullCharRect = {8,SCREEN_HEIGHT - 180,(float)menuLine - 16,160};
+    SDL_FRect fullBubbleRect = {8,SCREEN_HEIGHT - 300,(float)menuLine - 16,110};
     
     SDL_FRect inputRect = {TaskRect.x,TaskRect.y,TaskRect.w,TaskRect.h / 10};
     Uint32 uFlames = 0;
@@ -67,9 +72,11 @@ int main(int argc, char* argv[]){
     SDL_SetRenderDrawBlendMode(renderer, blendMode);
 
     //テクスチャの作成
-    charSuf = IMG_Load("assets/minikyaraTest.png");
-    minicharTex = SDL_CreateTextureFromSurface(renderer,charSuf);
-    SDL_DestroySurface(charSuf);
+    SDL_Surface* bubbleSurface = IMG_Load("assets/fukidashi-dot-rectangle-03-white.png");
+    bubbleTexture = SDL_CreateTextureFromSurface(renderer,bubbleSurface);
+    SDL_DestroySurface(bubbleSurface);
+    SDL_SetTextureScaleMode(bubbleTexture,SDL_SCALEMODE_NEAREST);
+    InitCharacterReaction(&characterReaction,renderer,SDL_GetTicks());
 
     
     //フォントのロード
@@ -133,8 +140,10 @@ int main(int argc, char* argv[]){
                     if (event.key.key == SDLK_RETURN || event.key.key == SDLK_KP_ENTER){
                         if (!event.key.repeat && compositionText.empty() && !imeConfirmPending
                             && !newTaskContent.empty()){
-                            taskCard.newWriteTaskDB(newTaskContent);
-                            newTaskContent.clear();
+                            if (taskCard.newWriteTaskDB(newTaskContent) == 0){
+                                NotifyCharacterAction(&characterReaction,CHARACTER_TASK_ADDED,SDL_GetTicks());
+                                newTaskContent.clear();
+                            }
                         }
                     }else if (event.key.key == SDLK_BACKSPACE && compositionText.empty()
                         && !imeConfirmPending && !newTaskContent.empty()){
@@ -214,7 +223,19 @@ int main(int argc, char* argv[]){
                             && event.button.x < checkRects[i].x + checkRects[i].w
                             && event.button.y >= checkRects[i].y
                             && event.button.y < checkRects[i].y + checkRects[i].h){
-                            taskCard.flagChange(checkTaskIds[i]);
+                            int id = checkTaskIds[i];
+                            Task beforeTask = taskCard.ReadTaskDB(id,false);
+                            bool wasUnfinished = (beforeTask.id == id);
+                            if (taskCard.flagChange(id) == 0){
+                                Task updatedTask = taskCard.ReadTaskDB(id,wasUnfinished);
+                                if (updatedTask.id == id){
+                                    if (wasUnfinished){
+                                        NotifyCharacterAction(&characterReaction,CHARACTER_TASK_COMPLETED,SDL_GetTicks());
+                                    }else{
+                                        NotifyCharacterAction(&characterReaction,CHARACTER_TASK_REOPENED,SDL_GetTicks());
+                                    }
+                                }
+                            }
                             break;
                         }
                     }
@@ -245,16 +266,25 @@ int main(int argc, char* argv[]){
         std::sort(taskIds.begin(),taskIds.end());
 
         std::vector<Task> tasks;
+        int unfinishedCount = 0;
         for (int i = 0; i < (int)taskIds.size(); i++){
             int id = taskIds[i];
             if (i > 0 && id == taskIds[i - 1]){
                 continue;
             }
-            Task task = taskCard.ReadTaskDB(id,showAchieved);
+            Task task = taskCard.ReadTaskDB(id,false);
+            if (task.id == id){
+                unfinishedCount++;
+            }
+            if (showAchieved){
+                task = taskCard.ReadTaskDB(id,true);
+            }
             if (task.id == id){
                 tasks.push_back(task);
             }
         }
+
+        UpdateCharacterReaction(&characterReaction,unfinishedCount,SDL_GetTicks());
 
         if (isSmall){
             SDL_SetRenderDrawColor(renderer,0,0,0,0);
@@ -263,8 +293,6 @@ int main(int argc, char* argv[]){
             SDL_RenderFillRect(renderer,&s_taskMenuLineRect);
             SDL_SetRenderDrawColor(renderer,161,157,185,255);
             SDL_RenderFillRect(renderer,&s_taskMenuRect);        
-            SDL_FRect s_charDrawRect = {float(s_charRect.x), float(s_charRect.y), float(s_charRect.w), float(s_charRect.h)};
-            SDL_RenderTexture(renderer,minicharTex,NULL, &s_charDrawRect);
         }
         else{
             SDL_SetRenderDrawColor(renderer,186,183,204,255);
@@ -371,6 +399,11 @@ int main(int argc, char* argv[]){
             
         }
 
+        if (isSmall){
+            DrawCharacterReaction(&characterReaction,renderer,bubbleTexture,true,s_charRect,s_fukidashiRect);
+        }else{
+            DrawCharacterReaction(&characterReaction,renderer,bubbleTexture,false,fullCharRect,fullBubbleRect);
+        }
         SDL_RenderPresent(renderer);
 
 
@@ -385,6 +418,8 @@ int main(int argc, char* argv[]){
     }
     //破棄
     SDL_StopTextInput(window);
+    DestroyCharacterReaction(&characterReaction);
+    SDL_DestroyTexture(bubbleTexture);
     SDL_DestroyTexture(notAchieveTexture);
     SDL_DestroyTexture(achieveTexture);
     SDL_DestroyRenderer(renderer);
