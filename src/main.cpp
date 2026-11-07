@@ -68,10 +68,9 @@ int main(int argc, char* argv[]){
     int id = 1;
     int ATflags = false;
     taskTest = taskCard.ReadTaskDB(id,ATflags);
-    //std::cout << taskTest.id << taskTest.date << taskTest.TaskContent << taskTest.flags << std::endl;
     std::string NewTaskContent = "gatiiku";
     taskCard.newWriteTaskDB(NewTaskContent);
-    printf("koko\n");
+    taskCard.flagChange(id);
     
     //ゲームループ
     while (bQuit == false)
