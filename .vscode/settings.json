@@ -4,6 +4,7 @@
     "*": false
   },
   "github.copilot.nextEditSuggestions.enabled": false,
+  "editor.inlineSuggest.enabled": false,
 
   // IntelliSenseによる関数・変数・ライブラリAPI候補を表示
   "editor.quickSuggestions": {
@@ -24,9 +25,32 @@
 
   // 定型コードのスニペット候補は不要なら無効化
   "editor.snippetSuggestions": "none",
-  "C_Cpp.errorSquiggles": "disabled",
+  // 未定義の変数・関数や型の不一致をエディターに表示
+  "C_Cpp.intelliSenseEngine": "default",
+  "C_Cpp.errorSquiggles": "enabled",
+  "editor.renderValidationDecorations": "on",
 
-  //Cmakeが保持しているSDL2の情報を渡す
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
-  
+  // 解析した型・関数・変数に応じて色分け
+  "C_Cpp.enhancedColorization": "enabled",
+  "[cpp]": {
+    "editor.semanticHighlighting.enabled": true
+  },
+
+  // CMakeのビルド設定からSDL3の情報を取得
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "cmake.buildDirectory": "${workspaceFolder}/build/sdl3",
+  "cmake.configureSettings": {
+    "CMAKE_CXX_COMPILER": "C:/msys64/ucrt64/bin/g++.exe",
+    "CMAKE_PREFIX_PATH": "C:/msys64/ucrt64"
+  },
+  "cmake.configureOnOpen": true,
+
+  // CMake未構成時やビルド対象外の.cppにも実環境と同じ設定を使用
+  "C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/g++.exe",
+  "C_Cpp.default.intelliSenseMode": "windows-gcc-x64",
+  "C_Cpp.default.cppStandard": "c++20",
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/src",
+    "C:/msys64/ucrt64/include"
+  ]
 }
