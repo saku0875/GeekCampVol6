@@ -108,10 +108,10 @@ int main(int argc, char* argv[]){
     fsuf = TTF_RenderText_Blended(sfont,"メニュー",0,fColor);
     ftex = SDL_CreateTextureFromSurface(renderer,fsuf);
     SDL_DestroySurface(fsuf);
-    fsuf = TTF_RenderText_Blended(sfont,"未達成",0,fColor);
+    fsuf = TTF_RenderText_Blended(sfont,"Active",0,fColor);
     notAchieveTexture = SDL_CreateTextureFromSurface(renderer,fsuf);
     SDL_DestroySurface(fsuf);
-    fsuf = TTF_RenderText_Blended(sfont,"達成済",0,fColor);
+    fsuf = TTF_RenderText_Blended(sfont,"Achieve",0,fColor);
     achieveTexture = SDL_CreateTextureFromSurface(renderer,fsuf);
     SDL_DestroySurface(fsuf);
     
